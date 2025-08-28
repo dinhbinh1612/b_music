@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spotify_b/blocs/profile/profile_cubit.dart';
 import 'package:spotify_b/core/configs/app_routes.dart';
+import 'package:spotify_b/data/providers/auth_provider.dart';
 import 'package:spotify_b/presentation/screens/auth/login/login_email.dart';
 import 'package:spotify_b/presentation/screens/auth/register/birthdate_put_screen.dart';
 import 'package:spotify_b/presentation/screens/auth/register/choose_gender_screen.dart';
@@ -9,7 +12,9 @@ import 'package:spotify_b/presentation/screens/auth/register/password_put_screen
 import 'package:spotify_b/presentation/screens/auth/signin_options_screen.dart';
 import 'package:spotify_b/presentation/screens/auth/signup_options_screen.dart';
 import 'package:spotify_b/presentation/screens/auth/welcome_screen.dart';
-import 'package:spotify_b/presentation/screens/hometabbottom/home_screen.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/home/account_screen.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/home/home_screen.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/home/profile_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -34,8 +39,27 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     // Login with email
     case AppRoutes.loginEmail:
       return MaterialPageRoute(builder: (_) => const LoginEmailScreen());
+
+    // main- home
     case AppRoutes.home:
       return MaterialPageRoute(builder: (_) => const HomeScreen());
+    case AppRoutes.account:
+      return MaterialPageRoute(
+        builder:
+            (_) => BlocProvider(
+              create: (_) => ProfileCubit(AuthProvider())..fetchProfile(),
+              child: const AccountScreen(),
+            ),
+      );
+    case AppRoutes.profile:
+      return MaterialPageRoute(
+        builder:
+            (_) => BlocProvider(
+              create: (_) => ProfileCubit(AuthProvider())..fetchProfile(),
+              child: const ProfileScreen(),
+            ),
+      );
+
     default:
       return MaterialPageRoute(
         builder:

@@ -6,7 +6,10 @@ import 'package:spotify_b/blocs/register/register_bloc.dart';
 import 'package:spotify_b/blocs/register/register_data_cubit.dart';
 import 'package:spotify_b/core/configs/app_router.dart';
 import 'package:spotify_b/core/configs/app_routes.dart';
+import 'package:spotify_b/core/utils/auth_manager.dart';
 import 'package:spotify_b/data/providers/auth_provider.dart';
+import 'package:spotify_b/presentation/screens/auth/welcome_screen.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/main_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,12 +45,36 @@ class MyApp extends StatelessWidget {
                 const SystemUiOverlayStyle(
                   statusBarColor: Colors.transparent,
                   statusBarIconBrightness: Brightness.light,
-                  systemNavigationBarColor: Color(0xFF121212),
+                  systemNavigationBarColor: Color(0xFF1D1D1D),
                   systemNavigationBarIconBrightness: Brightness.light,
                 ),
               );
               return child ?? const SizedBox.shrink();
             },
+            home: FutureBuilder<bool>(
+              future: AuthManager.isLoggedIn(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        // ignore: deprecated_member_use
+                        color: Colors.black.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFF1DB954), // Màu xanh lá Spotify
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                final isLoggedIn = snapshot.data ?? false;
+                return isLoggedIn ? MainScreen() : WelcomeScreen();
+              },
+            ),
             initialRoute: AppRoutes.welcome,
             onGenerateRoute: generateRoute,
             debugShowCheckedModeBanner: false,

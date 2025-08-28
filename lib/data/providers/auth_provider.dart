@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:spotify_b/core/constants/api_constants.dart';
+import 'package:spotify_b/data/models/profile_model.dart';
 import 'package:spotify_b/data/models/user_login_model.dart';
 import 'package:spotify_b/data/models/user_register_model.dart';
 
@@ -36,4 +37,23 @@ class AuthProvider {
       throw Exception(error['message'] ?? 'Đăng nhập thất bại');
     }
   }
+
+  // Hàm lấy profile
+  Future<Profile> getProfile(String token) async {
+  final response = await http.get(
+    Uri.parse(ApiConstants.profile),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    return Profile.fromJson(data);
+  } else {
+    final error = json.decode(response.body);
+    throw Exception(error['message'] ?? 'Lấy profile thất bại');
+  }
+}
 }
