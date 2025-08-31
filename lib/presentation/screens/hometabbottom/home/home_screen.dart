@@ -6,6 +6,7 @@ import 'package:spotify_b/core/configs/app_routes.dart';
 import 'package:spotify_b/core/constants/api_constants.dart';
 import 'package:spotify_b/data/repositories/song_repository.dart';
 import 'package:spotify_b/presentation/widgets/recommended_songs.dart';
+import 'package:spotify_b/presentation/widgets/trending_song.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -91,11 +92,9 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   RecommendedSongsSection(),
 
-                  const _SectionTitle(title: "Xu hướng"),
+                  const _SectionTitle(title: "Nhạc Hot"),
                   const SizedBox(height: 12),
-                  _PlaylistGrid(
-                    items: List.generate(6, (i) => "Xu hướng ${i + 1}"),
-                  ),
+                  TrendingSongsSection(),
                 ],
               ),
             ),
@@ -139,64 +138,6 @@ class _SectionTitle extends StatelessWidget {
         fontSize: 18,
         fontWeight: FontWeight.bold,
       ),
-    );
-  }
-}
-
-/// Grid playlist
-class _PlaylistGrid extends StatelessWidget {
-  final List<String> items;
-  const _PlaylistGrid({required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: items.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1,
-      ),
-      itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white10,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[800],
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(12),
-                    ),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.music_note,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  items[index],
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }
