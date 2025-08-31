@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spotify_b/blocs/profile/profile_cubit.dart';
+import 'package:spotify_b/blocs/songs/songs_cubit.dart';
 import 'package:spotify_b/core/configs/app_routes.dart';
+import 'package:spotify_b/core/constants/api_constants.dart';
+import 'package:spotify_b/data/repositories/song_repository.dart';
+import 'package:spotify_b/presentation/widgets/recommended_songs.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,55 +24,83 @@ class HomeScreen extends StatelessWidget {
         actions: [
           Icon(Icons.search, color: Colors.white),
           SizedBox(width: 12),
-          GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, AppRoutes.account);
+          // Sử dụng BlocConsumer để xử lý cả trạng thái và hiển thị
+          BlocConsumer<ProfileCubit, ProfileState>(
+            listener: (context, state) {
+              // Có thể thêm các xử lý khi state thay đổi nếu cần
             },
-            child: const Icon(Icons.account_circle, color: Colors.white),
+            builder: (context, state) {
+              String avatarUrl = "";
+              bool hasAvatar = false;
+
+              if (state is ProfileLoaded) {
+                avatarUrl = state.profile.avatar;
+                hasAvatar = avatarUrl.isNotEmpty;
+              }
+
+              return GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.account);
+                },
+                child:
+                    hasAvatar
+                        ? CircleAvatar(
+                          radius: 16,
+                          backgroundImage: NetworkImage(
+                            "${ApiConstants.baseUrl}$avatarUrl",
+                          ),
+                        )
+                        : const Icon(
+                          Icons.account_circle,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+              );
+            },
           ),
           SizedBox(width: 8),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          /// Tab bar ngang (fake, chưa có chức năng)
-          SizedBox(
-            height: 52,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: const [
-                _TabItem(label: "Đề xuất"),
-                _TabItem(label: "Bảng xếp hạng"),
-                _TabItem(label: "Thể loại"),
-                _TabItem(label: "Album"),
-                _TabItem(label: "Nghệ sĩ"),
-              ],
+      body: BlocProvider(
+        create: (_) => SongCubit(SongRepository())..loadRecommendedSongs(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// Tab bar ngang (fake, chưa có chức năng)
+            SizedBox(
+              height: 52,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: const [
+                  _TabItem(label: "Đề xuất"),
+                  _TabItem(label: "Bảng xếp hạng"),
+                  _TabItem(label: "Thể loại"),
+                  _TabItem(label: "Album"),
+                  _TabItem(label: "Nghệ sĩ"),
+                ],
+              ),
             ),
-          ),
-          const Divider(color: Colors.white24, height: 1),
+            const Divider(color: Colors.white24, height: 1),
 
-          /// Nội dung chính: danh sách playlist
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(12),
-              children: [
-                const _SectionTitle(title: "Dành cho bạn"),
-                const SizedBox(height: 12),
-                _PlaylistGrid(
-                  items: List.generate(6, (i) => "Playlist ${i + 1}"),
-                ),
-                const SizedBox(height: 24),
+            /// Nội dung chính: danh sách playlist
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(12),
+                children: [
+                  const _SectionTitle(title: "Dành cho bạn"),
+                  const SizedBox(height: 12),
+                  RecommendedSongsSection(),
 
-                const _SectionTitle(title: "Xu hướng"),
-                const SizedBox(height: 12),
-                _PlaylistGrid(
-                  items: List.generate(6, (i) => "Xu hướng ${i + 1}"),
-                ),
-              ],
+                  const _SectionTitle(title: "Xu hướng"),
+                  const SizedBox(height: 12),
+                  _PlaylistGrid(
+                    items: List.generate(6, (i) => "Xu hướng ${i + 1}"),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

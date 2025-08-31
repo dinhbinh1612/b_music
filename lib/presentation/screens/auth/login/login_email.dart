@@ -65,10 +65,10 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                     (route) => false,
                   );
                   AuthManager.setLoggedIn(true);
-                  showCustomSnackBar(
-                    context: newContext,
-                    message: 'Đăng nhập thành công!',
-                  );
+                  // showCustomSnackBar(
+                  //   context: newContext,
+                  //   message: 'Đăng nhập thành công!',
+                  // );
                 } else if (state is LoginFailure) {
                   final error = state.errorMessage;
 

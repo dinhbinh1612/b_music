@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:spotify_b/core/constants/api_constants.dart';
 import 'package:spotify_b/data/models/profile_model.dart';
@@ -30,30 +31,49 @@ class AuthProvider {
       body: json.encode(user.toJson()),
     );
 
+    final responseBody = json.decode(response.body);
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      return responseBody;
     } else {
-      final error = json.decode(response.body);
-      throw Exception(error['message'] ?? 'Đăng nhập thất bại');
+      throw Exception(responseBody['message'] ?? 'Đăng nhập thất bại');
     }
   }
 
   // Hàm lấy profile
   Future<Profile> getProfile(String token) async {
-  final response = await http.get(
-    Uri.parse(ApiConstants.profile),
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-  );
+    final response = await http.get(
+      Uri.parse(ApiConstants.profile),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
 
-  if (response.statusCode == 200) {
-    final data = json.decode(response.body);
-    return Profile.fromJson(data);
-  } else {
-    final error = json.decode(response.body);
-    throw Exception(error['message'] ?? 'Lấy profile thất bại');
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return Profile.fromJson(data);
+    } else {
+      final error = json.decode(response.body);
+      throw Exception(error['message'] ?? 'Lấy profile thất bại');
+    }
   }
-}
+
+  // Upload avatar
+  Future<void> uploadAvatar(String token, File avatarFile) async {
+    final uri = Uri.parse(ApiConstants.uploadAvatar);
+
+    final request =
+        http.MultipartRequest("POST", uri)
+          ..headers['Authorization'] = 'Bearer $token'
+          ..files.add(
+            await http.MultipartFile.fromPath('avatar', avatarFile.path),
+          );
+
+    final response = await request.send();
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      final respStr = await response.stream.bytesToString();
+      throw Exception("Upload thất bại: $respStr");
+    }
+  }
 }

@@ -18,14 +18,23 @@ class LoginCubit extends Cubit<LoginState> {
         UserLoginModel(email: email, password: password),
       );
 
-      final token = result['token'];
-      if (token != null) {
-        await AuthManager.saveToken(token);
-        await AuthManager.setLoggedIn(true);
+      if (result['data'] == null) {
+        throw Exception("Không có data trong response: $result");
       }
+
+      final token = result['data']['token'];
+      if (token == null || token.isEmpty) {
+        throw Exception("Token không tồn tại hoặc rỗng");
+      }
+
+      await AuthManager.saveToken(token);
+      await AuthManager.setLoggedIn(true);
+
+      // print('Token đã lưu: ${token.substring(0, 20)}...');
 
       emit(LoginSuccess(userData: result));
     } catch (e) {
+      // print('Lỗi login: $e');
       emit(LoginFailure(errorMessage: e.toString()));
     }
   }

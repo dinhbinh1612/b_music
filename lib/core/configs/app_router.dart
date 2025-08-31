@@ -47,7 +47,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         builder:
             (_) => BlocProvider(
-              create: (_) => ProfileCubit(AuthProvider())..fetchProfile(),
+              create: (_) => ProfileCubit(AuthProvider())..getProfile(),
               child: const AccountScreen(),
             ),
       );
@@ -55,7 +55,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         builder:
             (_) => BlocProvider(
-              create: (_) => ProfileCubit(AuthProvider())..fetchProfile(),
+              create: (_) => ProfileCubit(AuthProvider())..getProfile(),
               child: const ProfileScreen(),
             ),
       );

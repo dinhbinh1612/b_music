@@ -25,4 +25,6 @@ class Profile {
       birthdate: json['birthdate'] ?? '',
     );
   }
+
+  copyWith({required String avatar}) {}
 }

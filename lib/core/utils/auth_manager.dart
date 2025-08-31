@@ -20,10 +20,11 @@ class AuthManager {
   static Future<void> clearLogin() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_isLoggedInKey);
+    await prefs.remove(_tokenKey);
   }
 
   // Lưu Token
-  static Future<void> saveToken(String token) async{
+  static Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
   }
