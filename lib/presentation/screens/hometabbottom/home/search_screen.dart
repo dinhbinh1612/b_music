@@ -214,7 +214,7 @@ class _SearchViewState extends State<_SearchView> {
                         color: Colors.white,
                       ),
                       onTap: () {
-                        // TODO: mở player
+                        // TODO: setting
                       },
                     );
                   },
@@ -256,19 +256,6 @@ class _HistorySection extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-
-            TextButton(
-              onPressed: onClearAll,
-              child: const Text(
-                "Xoá tất cả",
-                style: TextStyle(color: Colors.white70, fontSize: 12),
-              ),
-            ),
-          ],
-        ),
         // lịch sử tìm kiếm
         Column(
           children:
@@ -282,6 +269,49 @@ class _HistorySection extends StatelessWidget {
                   ),
                 );
               }).toList(),
+        ),
+        TextButton(
+          onPressed: () async {
+            final confirm = await showDialog<bool>(
+              context: context,
+              builder:
+                  (context) => AlertDialog(
+                    backgroundColor: Colors.grey.shade900,
+                    title: const Text(
+                      'Xác nhận',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    content: const Text(
+                      'Bạn có chắc muốn xoá tất cả lịch sử tìm kiếm?',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false), // hủy
+                        child: const Text(
+                          'Hủy',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true), // đồng ý
+                        child: const Text(
+                          'Xoá',
+                          style: TextStyle(color: Colors.redAccent),
+                        ),
+                      ),
+                    ],
+                  ),
+            );
+
+            if (confirm == true) {
+              onClearAll(); // gọi hàm xoá nếu đồng ý
+            }
+          },
+          child: const Text(
+            "Xoá tất cả",
+            style: TextStyle(color: Colors.white70, fontSize: 16),
+          ),
         ),
       ],
     );
