@@ -2,67 +2,70 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:spotify_b/blocs/player/player_song_cubit.dart';
-import 'package:spotify_b/core/constants/api_constants.dart';
 import 'package:spotify_b/data/models/song_model.dart';
 
 class MusicPlayerScreen extends StatelessWidget {
   final List<Song> playlist;
   final int initialIndex;
+  final bool shouldInit;
 
   const MusicPlayerScreen({
     super.key,
     required this.playlist,
     required this.initialIndex,
+    this.shouldInit = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create:
-          (context) =>
-              PlayerSongCubit()
-                ..initPlayer(playlist, initialIndex: initialIndex),
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'Bài Hát',
-            style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.more_vert, color: Colors.white),
-              onPressed: () {},
-            ),
-          ],
+    final playerCubit = context.read<PlayerSongCubit>();
+    if (shouldInit) {
+      playerCubit.initPlayer(playlist, initialIndex: initialIndex);
+    }
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
         ),
-        body: BlocConsumer<PlayerSongCubit, PlayerSongState>(
-          listener: (context, state) {
-            if (state is PlayerError) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
-            }
-          },
-          builder: (context, state) {
-            if (state is PlayerLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is PlayerPlaying) {
-              return _PlayerContent(state: state);
-            } else if (state is PlayerError) {
-              return Center(child: Text('Error: ${state.message}'));
-            } else {
-              return const Center(child: Text('Không có bài hát'));
-            }
-          },
+        title: const Text(
+          'Bài Hát',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: BlocConsumer<PlayerSongCubit, PlayerSongState>(
+        listener: (context, state) {
+          if (state is PlayerError) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
+          }
+        },
+        builder: (context, state) {
+          if (state is PlayerLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is PlayerPlaying) {
+            return _PlayerContent(state: state);
+          } else if (state is PlayerError) {
+            return Center(child: Text('Error: ${state.message}'));
+          } else {
+            return const Center(child: Text('Không có bài hát'));
+          }
+        },
       ),
     );
   }
@@ -98,7 +101,7 @@ class _PlayerContent extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: Image.network(
-              '${ApiConstants.baseUrl}/${song.coverUrl}',
+              song.fullCoverUrl,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(

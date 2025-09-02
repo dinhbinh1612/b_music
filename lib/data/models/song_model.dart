@@ -1,3 +1,5 @@
+import 'package:spotify_b/core/constants/api_constants.dart';
+
 class Song {
   final String id;
   final String title;
@@ -72,4 +74,6 @@ class Song {
       isLiked: isLiked ?? this.isLiked,
     );
   }
+
+  String get fullCoverUrl => "${ApiConstants.baseUrl}/$coverUrl";
 }

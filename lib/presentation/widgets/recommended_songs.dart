@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotify_b/blocs/songs/recommended_songs_cubit.dart';
 import 'package:spotify_b/blocs/songs/recommended_songs_state.dart';
-import 'package:spotify_b/core/constants/api_constants.dart';
 import 'package:spotify_b/data/models/song_model.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/player/music_player_screen.dart';
 
@@ -118,7 +117,7 @@ class _RecommendedSongsSectionState extends State<RecommendedSongsSection> {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image.network(
-                                  '${ApiConstants.baseUrl}/${song.coverUrl}',
+                                  song.fullCoverUrl,
                                   fit: BoxFit.cover,
                                   width: double.infinity,
                                   height: double.infinity,

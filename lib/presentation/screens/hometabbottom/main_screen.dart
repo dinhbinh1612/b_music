@@ -3,6 +3,7 @@ import 'package:spotify_b/presentation/screens/hometabbottom/explore_screen.dart
 import 'package:spotify_b/presentation/screens/hometabbottom/home/home_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/library_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/trend_screen.dart';
+import 'package:spotify_b/presentation/widgets/mini_player.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -22,6 +23,7 @@ class _MainScreenState extends State<MainScreen> {
   ];
 
   void _onTabTapped(int index) {
+    if (_currentIndex == index) return; // tránh setState lại cùng index
     setState(() {
       _currentIndex = index;
     });
@@ -31,23 +33,35 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Color(0xFF1D1D1D),
-        type: BottomNavigationBarType.fixed,
-        onTap: _onTabTapped,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.play_circle),
-            label: 'Xu hướng',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Khám phá'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.library_music),
-            label: 'Thư viện',
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const MiniPlayer(),
+          BottomNavigationBar(
+            currentIndex: _currentIndex,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.grey,
+            backgroundColor: const Color(0xFF1D1D1D),
+            type: BottomNavigationBarType.fixed,
+            onTap: _onTabTapped,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Trang chủ',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.trending_up),
+                label: 'Xu hướng',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.explore),
+                label: 'Khám phá',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.library_music),
+                label: 'Thư viện',
+              ),
+            ],
           ),
         ],
       ),

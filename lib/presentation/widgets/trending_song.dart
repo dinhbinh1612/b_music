@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotify_b/blocs/songs/trending_cubit.dart';
-import 'package:spotify_b/core/constants/api_constants.dart';
 import 'package:spotify_b/data/models/song_model.dart';
 
 class TrendingSongsSection extends StatefulWidget {
@@ -171,7 +170,7 @@ class _TrendingSongsSectionState extends State<TrendingSongsSection> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                '${ApiConstants.baseUrl}/${song.coverUrl}',
+                song.fullCoverUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
