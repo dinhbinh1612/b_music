@@ -13,7 +13,7 @@ class RecommendedSongCubit extends Cubit<RecommendedSongsState> {
       final songs = await repository.fetchRecommendedSongs();
       emit(state.copyWith(songs: songs, loading: false));
     } catch (e) {
-      // print("❌ Lỗi load songs: $e");
+      // print("Lỗi load songs: $e");
       // emit(state.copyWith(error: e.toString(), loading: false));
     }
   }

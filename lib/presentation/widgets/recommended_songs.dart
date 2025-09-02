@@ -4,6 +4,7 @@ import 'package:spotify_b/blocs/songs/recommended_songs_cubit.dart';
 import 'package:spotify_b/blocs/songs/recommended_songs_state.dart';
 import 'package:spotify_b/core/constants/api_constants.dart';
 import 'package:spotify_b/data/models/song_model.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/player/music_player_screen.dart';
 
 class RecommendedSongsSection extends StatefulWidget {
   const RecommendedSongsSection({super.key});
@@ -87,7 +88,16 @@ class _RecommendedSongsSectionState extends State<RecommendedSongsSection> {
                       final song = songs[index];
                       return GestureDetector(
                         onTap: () {
-                          // Xử lý khi nhấn vào bài hát
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => MusicPlayerScreen(
+                                    playlist: state.songs,
+                                    initialIndex: index + (pageIndex * 9),
+                                  ),
+                            ),
+                          );
                         },
                         child: Container(
                           decoration: BoxDecoration(

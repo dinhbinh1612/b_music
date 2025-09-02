@@ -13,12 +13,11 @@ class TrendingSongsSection extends StatefulWidget {
 
 class _TrendingSongsSectionState extends State<TrendingSongsSection> {
   final ScrollController _scrollController = ScrollController();
-  final double _scrollThreshold = 300.0;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
+    // _scrollController.addListener(_onScroll);
 
     // Load dữ liệu ban đầu sau khi build
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -26,21 +25,10 @@ class _TrendingSongsSectionState extends State<TrendingSongsSection> {
     });
   }
 
-  void _onScroll() {
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.position.pixels;
-    if (maxScroll - currentScroll <= _scrollThreshold) {
-      final cubit = context.read<TrendingCubit>();
-      if (cubit.hasMore && !cubit.isLoadingMore) {
-        debugPrint('Triggering load more via _onScroll...');
-        cubit.loadTrendingSongs(loadMore: true);
-      }
-    }
-  }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
+    // _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:spotify_b/blocs/player/player_song_cubit.dart';
 import 'package:spotify_b/blocs/profile/profile_cubit.dart';
 import 'package:spotify_b/blocs/register/register_bloc.dart';
 import 'package:spotify_b/blocs/register/register_data_cubit.dart';
 import 'package:spotify_b/blocs/songs/recommended_songs_cubit.dart';
 import 'package:spotify_b/blocs/songs/trending_cubit.dart';
 import 'package:spotify_b/core/configs/app_router.dart';
-import 'package:spotify_b/core/configs/app_routes.dart';
 import 'package:spotify_b/core/utils/auth_manager.dart';
 import 'package:spotify_b/data/providers/auth_provider.dart';
 import 'package:spotify_b/data/repositories/song_repository.dart';
@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
             ),
             BlocProvider(create: (_) => RecommendedSongCubit(SongRepository())),
             BlocProvider(create: (context) => TrendingCubit()),
+            BlocProvider(create: (_) => PlayerSongCubit()),
           ],
           child: MaterialApp(
             title: 'Flutter Demo',
@@ -84,7 +85,6 @@ class MyApp extends StatelessWidget {
                 return isLoggedIn ? MainScreen() : WelcomeScreen();
               },
             ),
-            initialRoute: AppRoutes.welcome,
             onGenerateRoute: generateRoute,
             debugShowCheckedModeBanner: false,
           ),

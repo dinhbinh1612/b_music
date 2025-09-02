@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotify_b/blocs/profile/profile_cubit.dart';
 import 'package:spotify_b/blocs/songs/recommended_songs_cubit.dart';
-import 'package:spotify_b/blocs/songs/trending_cubit.dart';
 import 'package:spotify_b/core/configs/app_routes.dart';
 import 'package:spotify_b/core/constants/api_constants.dart';
 import 'package:spotify_b/data/repositories/song_repository.dart';
@@ -41,18 +40,19 @@ class HomeScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.pushNamed(context, AppRoutes.account);
                 },
-                child: hasAvatar
-                    ? CircleAvatar(
-                        radius: 16,
-                        backgroundImage: NetworkImage(
-                          "${ApiConstants.baseUrl}$avatarUrl",
+                child:
+                    hasAvatar
+                        ? CircleAvatar(
+                          radius: 16,
+                          backgroundImage: NetworkImage(
+                            "${ApiConstants.baseUrl}$avatarUrl",
+                          ),
+                        )
+                        : const Icon(
+                          Icons.account_circle,
+                          color: Colors.white,
+                          size: 28,
                         ),
-                      )
-                    : const Icon(
-                        Icons.account_circle,
-                        color: Colors.white,
-                        size: 28,
-                      ),
               );
             },
           ),
@@ -60,8 +60,9 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: BlocProvider(
-        create: (_) =>
-            RecommendedSongCubit(SongRepository())..loadRecommendedSongs(),
+        create:
+            (_) =>
+                RecommendedSongCubit(SongRepository())..loadRecommendedSongs(),
         child: CustomScrollView(
           slivers: [
             // Tab bar ngang
@@ -106,10 +107,7 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     const _SectionTitle(title: "Nhạc Hot"),
                     const SizedBox(height: 12),
-                    BlocProvider(
-                      create: (context) => TrendingCubit(),
-                      child: const TrendingSongsSection(),
-                    ),
+                    const TrendingSongsSection(),
                   ],
                 ),
               ),

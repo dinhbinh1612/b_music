@@ -17,6 +17,9 @@ dependencies:
   shared_preferences: ^2.5.3
   image_picker: ^1.2.0
   dio: ^5.9.0
+  rxdart: ^0.28.0
+  just_audio: ^0.10.4
+  percent_indicator: ^4.2.5
 
 dev_dependencies:
   flutter_test:
