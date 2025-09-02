@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:spotify_b/data/models/song_model.dart';
@@ -9,9 +10,7 @@ class SongRepository {
   final Dio dio = Dio();
   Future<List<Song>> fetchRecommendedSongs() async {
     try {
-      // Lấy token từ AuthManager
       final token = await AuthManager.getToken();
-
       if (token == null) {
         throw Exception('Chưa đăng nhập');
       }
@@ -26,30 +25,73 @@ class SongRepository {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final List<dynamic> songsJson = (data['data'] ?? []) as List;
-        return songsJson.map((e) => Song.fromJson(e)).toList();
+
+        // Sửa ở đây: data['data'] là object, không phải array
+        if (data['success'] == true && data['data'] != null) {
+          final responseData = data['data'];
+          final List<dynamic> songsJson = responseData['songs'] ?? [];
+
+          return songsJson.map((e) => Song.fromJson(e)).toList();
+        } else {
+          throw Exception('API response format error');
+        }
       } else {
         throw Exception('API error: ${response.statusCode}');
       }
     } catch (e) {
+      debugPrint('Error in fetchRecommendedSongs: $e');
       rethrow;
     }
   }
 
-  Future<List<Song>> getTrendingSongs() async {
+  Future<Map<String, dynamic>> getTrendingSongs({
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
+      debugPrint('Fetching trending songs page $page, limit $limit');
+
       final response = await dio.get(
-        '${ApiConstants.baseUrl}/analytics/trending?limit=20',
+        '${ApiConstants.baseUrl}/analytics/trending?page=$page&limit=$limit',
       );
 
+      debugPrint('API response status: ${response.statusCode}');
+
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data['data'] ?? [];
-        return data.map((json) => Song.fromJson(json)).toList();
+        // debugPrint('Trending API response: ${response.data}');
+
+        if (response.data['success'] == true && response.data['data'] != null) {
+          final responseData = response.data['data'];
+          final List<dynamic> songsJson = responseData['songs'] ?? [];
+
+          final List<Song> songs =
+              songsJson.map((json) => Song.fromJson(json)).toList();
+          final int currentPage = responseData['page'];
+          final int totalPages = responseData['totalPages'];
+
+          // debugPrint(
+          //   'Found ${songs.length} trending songs, page $currentPage/$totalPages',
+          // );
+
+          return {
+            'songs': songs,
+            'currentPage': currentPage,
+            'totalPages': totalPages,
+            'hasMore': currentPage < totalPages,
+          };
+        } else {
+          throw Exception(
+            'Invalid API response format: missing data or success flag',
+          );
+        }
       } else {
-        throw Exception('Failed to load trending songs');
+        throw Exception(
+          'Failed to load trending songs: ${response.statusCode}',
+        );
       }
     } catch (e) {
-      throw Exception('Error loading trending songs: $e');
+      debugPrint('Error in getTrendingSongs: $e');
+      rethrow;
     }
   }
 }

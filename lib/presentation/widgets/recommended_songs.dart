@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spotify_b/blocs/songs/songs_cubit.dart';
-import 'package:spotify_b/blocs/songs/songs_state.dart';
+import 'package:spotify_b/blocs/songs/recommended_songs_cubit.dart';
+import 'package:spotify_b/blocs/songs/recommended_songs_state.dart';
 import 'package:spotify_b/core/constants/api_constants.dart';
 import 'package:spotify_b/data/models/song_model.dart';
 
@@ -25,7 +25,7 @@ class _RecommendedSongsSectionState extends State<RecommendedSongsSection> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SongCubit, SongState>(
+    return BlocBuilder<RecommendedSongCubit, RecommendedSongsState>(
       builder: (context, state) {
         if (state.loading) {
           return const Center(child: CircularProgressIndicator());

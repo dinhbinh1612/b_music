@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotify_b/blocs/profile/profile_cubit.dart';
-import 'package:spotify_b/blocs/songs/songs_cubit.dart';
+import 'package:spotify_b/blocs/songs/recommended_songs_cubit.dart';
+import 'package:spotify_b/blocs/songs/trending_cubit.dart';
 import 'package:spotify_b/core/configs/app_routes.dart';
 import 'package:spotify_b/core/constants/api_constants.dart';
 import 'package:spotify_b/data/repositories/song_repository.dart';
@@ -25,11 +26,8 @@ class HomeScreen extends StatelessWidget {
         actions: [
           Icon(Icons.search, color: Colors.white),
           SizedBox(width: 12),
-          // Sử dụng BlocConsumer để xử lý cả trạng thái và hiển thị
           BlocConsumer<ProfileCubit, ProfileState>(
-            listener: (context, state) {
-              // Có thể thêm các xử lý khi state thay đổi nếu cần
-            },
+            listener: (context, state) {},
             builder: (context, state) {
               String avatarUrl = "";
               bool hasAvatar = false;
@@ -43,19 +41,18 @@ class HomeScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.pushNamed(context, AppRoutes.account);
                 },
-                child:
-                    hasAvatar
-                        ? CircleAvatar(
-                          radius: 16,
-                          backgroundImage: NetworkImage(
-                            "${ApiConstants.baseUrl}$avatarUrl",
-                          ),
-                        )
-                        : const Icon(
-                          Icons.account_circle,
-                          color: Colors.white,
-                          size: 28,
+                child: hasAvatar
+                    ? CircleAvatar(
+                        radius: 16,
+                        backgroundImage: NetworkImage(
+                          "${ApiConstants.baseUrl}$avatarUrl",
                         ),
+                      )
+                    : const Icon(
+                        Icons.account_circle,
+                        color: Colors.white,
+                        size: 28,
+                      ),
               );
             },
           ),
@@ -63,39 +60,58 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: BlocProvider(
-        create: (_) => SongCubit(SongRepository())..loadRecommendedSongs(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// Tab bar ngang (fake, chưa có chức năng)
-            SizedBox(
-              height: 52,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: const [
-                  _TabItem(label: "Đề xuất"),
-                  _TabItem(label: "Bảng xếp hạng"),
-                  _TabItem(label: "Thể loại"),
-                  _TabItem(label: "Album"),
-                  _TabItem(label: "Nghệ sĩ"),
-                ],
+        create: (_) =>
+            RecommendedSongCubit(SongRepository())..loadRecommendedSongs(),
+        child: CustomScrollView(
+          slivers: [
+            // Tab bar ngang
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 52,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: const [
+                    _TabItem(label: "Đề xuất"),
+                    _TabItem(label: "Bảng xếp hạng"),
+                    _TabItem(label: "Thể loại"),
+                    _TabItem(label: "Album"),
+                    _TabItem(label: "Nghệ sĩ"),
+                  ],
+                ),
               ),
             ),
-            const Divider(color: Colors.white24, height: 1),
-
-            /// Nội dung chính: danh sách playlist
-            Expanded(
-              child: ListView(
+            SliverToBoxAdapter(
+              child: const Divider(color: Colors.white24, height: 1),
+            ),
+            // Dành cho bạn
+            SliverToBoxAdapter(
+              child: Padding(
                 padding: const EdgeInsets.all(12),
-                children: [
-                  const _SectionTitle(title: "Dành cho bạn"),
-                  const SizedBox(height: 12),
-                  RecommendedSongsSection(),
-
-                  const _SectionTitle(title: "Nhạc Hot"),
-                  const SizedBox(height: 12),
-                  TrendingSongsSection(),
-                ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _SectionTitle(title: "Dành cho bạn"),
+                    const SizedBox(height: 12),
+                    RecommendedSongsSection(),
+                  ],
+                ),
+              ),
+            ),
+            // Nhạc Hot
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _SectionTitle(title: "Nhạc Hot"),
+                    const SizedBox(height: 12),
+                    BlocProvider(
+                      create: (context) => TrendingCubit(),
+                      child: const TrendingSongsSection(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

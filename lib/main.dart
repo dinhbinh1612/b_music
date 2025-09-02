@@ -5,7 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:spotify_b/blocs/profile/profile_cubit.dart';
 import 'package:spotify_b/blocs/register/register_bloc.dart';
 import 'package:spotify_b/blocs/register/register_data_cubit.dart';
-import 'package:spotify_b/blocs/songs/songs_cubit.dart';
+import 'package:spotify_b/blocs/songs/recommended_songs_cubit.dart';
+import 'package:spotify_b/blocs/songs/trending_cubit.dart';
 import 'package:spotify_b/core/configs/app_router.dart';
 import 'package:spotify_b/core/configs/app_routes.dart';
 import 'package:spotify_b/core/utils/auth_manager.dart';
@@ -35,7 +36,8 @@ class MyApp extends StatelessWidget {
             BlocProvider(
               create: (context) => ProfileCubit(AuthProvider())..getProfile(),
             ),
-            BlocProvider(create: (_) => SongCubit(SongRepository())),
+            BlocProvider(create: (_) => RecommendedSongCubit(SongRepository())),
+            BlocProvider(create: (context) => TrendingCubit()),
           ],
           child: MaterialApp(
             title: 'Flutter Demo',

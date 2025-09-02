@@ -8,7 +8,8 @@ class TrendingLoading extends TrendingState {}
 
 class TrendingLoaded extends TrendingState {
   final List<Song> songs;
-  TrendingLoaded(this.songs);
+  final bool hasMore;
+  TrendingLoaded(this.songs, {this.hasMore = true});
 }
 
 class TrendingError extends TrendingState {
