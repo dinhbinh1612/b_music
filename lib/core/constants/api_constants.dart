@@ -10,4 +10,5 @@ class ApiConstants {
   static const String recommendSongs = '$baseUrl/analytics/recommendations?limit=18';
   static const String trendingSongs = '$baseUrl/analytics/trending';
   static const String historySongs = '$baseUrl/analytics/history';
+  static const String searchSongs = '$baseUrl/songs/search';
 }

@@ -94,4 +94,35 @@ class SongRepository {
       rethrow;
     }
   }
+
+  Future<List<Song>> searchSongs(String query) async {
+    try {
+      final token = await AuthManager.getToken();
+
+      final response = await dio.get(
+        ApiConstants.searchSongs,
+        queryParameters: {'q': query},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 &&
+          response.data['success'] == true &&
+          response.data['data'] != null) {
+        final responseData = response.data['data'];
+        final List<dynamic> songsJson = responseData['songs'] ?? [];
+
+        return songsJson.map((e) => Song.fromJson(e)).toList();
+      } else {
+        throw Exception('Lỗi dữ liệu API không hợp lệ');
+      }
+    } catch (e) {
+      debugPrint('Error in searchSongs: $e');
+      rethrow;
+    }
+  }
 }

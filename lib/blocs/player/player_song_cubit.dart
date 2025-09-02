@@ -43,14 +43,25 @@ class PlayerSongCubit extends Cubit<PlayerSongState> {
       if (state is PlayerPlaying && !isClosed) {
         emit((state as PlayerPlaying).copyWith(isPlaying: isPlaying));
       }
+    });
 
-      if (playerState.processingState == ProcessingState.completed) {
-        if (_loopMode == LoopMode.one) {
-          _audioPlayer.seek(Duration.zero);
-          _audioPlayer.play();
-        } else {
-          next();
-        }
+    _audioPlayer.currentIndexStream.listen((index) {
+      if (index != null && index >= 0 && index < _playlist.length) {
+        _currentIndex = index;
+        final newSong = _playlist[_currentIndex];
+
+        emit(
+          PlayerPlaying(
+            currentSong: newSong,
+            position: const PlayerPosition(
+              position: Duration.zero,
+              duration: Duration.zero,
+            ),
+            isPlaying: _audioPlayer.playing,
+            isShuffling: _isShuffling,
+            loopMode: _loopMode,
+          ),
+        );
       }
     });
   }
@@ -124,18 +135,9 @@ class PlayerSongCubit extends Cubit<PlayerSongState> {
 
   Future<void> next() async {
     try {
-      final hasNext = _audioPlayer.hasNext;
-      if (hasNext) {
+      if (_audioPlayer.hasNext) {
         await _audioPlayer.seekToNext();
         _currentIndex = (_currentIndex + 1) % _playlist.length;
-
-        if (state is PlayerPlaying) {
-          emit(
-            (state as PlayerPlaying).copyWith(
-              currentSong: _playlist[_currentIndex],
-            ),
-          );
-        }
       }
     } catch (e) {
       emit(PlayerError(e.toString()));
@@ -144,19 +146,24 @@ class PlayerSongCubit extends Cubit<PlayerSongState> {
 
   Future<void> previous() async {
     try {
-      final hasPrevious = _audioPlayer.hasPrevious;
-      if (hasPrevious) {
+      if (_audioPlayer.hasPrevious) {
         await _audioPlayer.seekToPrevious();
         _currentIndex = (_currentIndex - 1) % _playlist.length;
         if (_currentIndex < 0) _currentIndex = _playlist.length - 1;
 
-        if (state is PlayerPlaying) {
-          emit(
-            (state as PlayerPlaying).copyWith(
-              currentSong: _playlist[_currentIndex],
+        final newSong = _playlist[_currentIndex];
+        emit(
+          PlayerPlaying(
+            currentSong: newSong,
+            position: const PlayerPosition(
+              position: Duration.zero,
+              duration: Duration.zero,
             ),
-          );
-        }
+            isPlaying: _audioPlayer.playing,
+            isShuffling: _isShuffling,
+            loopMode: _loopMode,
+          ),
+        );
       } else {
         await _audioPlayer.seek(Duration.zero);
       }

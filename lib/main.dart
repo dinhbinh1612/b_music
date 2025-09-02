@@ -41,7 +41,6 @@ class MyApp extends StatelessWidget {
             BlocProvider(create: (_) => PlayerSongCubit()),
           ],
           child: MaterialApp(
-            title: 'Flutter Demo',
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
               textSelectionTheme: TextSelectionThemeData(

@@ -22,8 +22,14 @@ class HomeScreen extends StatelessWidget {
           "Music BKL",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
+        // icon search
         actions: [
-          Icon(Icons.search, color: Colors.white),
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.white),
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.search);
+            },
+          ),
           SizedBox(width: 12),
           BlocConsumer<ProfileCubit, ProfileState>(
             listener: (context, state) {},

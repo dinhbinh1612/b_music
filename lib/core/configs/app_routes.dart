@@ -16,6 +16,7 @@ class AppRoutes {
   static const home = '/home';
   static const account = '/account';
   static const profile = '/profile';
+  static const search = '/search';
 
 
 }

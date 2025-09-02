@@ -71,15 +71,26 @@ class MusicPlayerScreen extends StatelessWidget {
   }
 }
 
-class _PlayerContent extends StatelessWidget {
+class _PlayerContent extends StatefulWidget {
   final PlayerPlaying state;
 
   const _PlayerContent({required this.state});
 
   @override
+  State<_PlayerContent> createState() => _PlayerContentState();
+}
+
+class _PlayerContentState extends State<_PlayerContent> {
+  double? _dragValue;
+
+  @override
   Widget build(BuildContext context) {
     final playerCubit = context.read<PlayerSongCubit>();
-    final song = state.currentSong;
+    final song = widget.state.currentSong;
+
+    final position =
+        _dragValue ?? widget.state.position.position.inSeconds.toDouble();
+    final duration = widget.state.position.duration.inSeconds.toDouble();
 
     return Column(
       children: [
@@ -186,34 +197,46 @@ class _PlayerContent extends StatelessWidget {
                     overlayRadius: 16,
                   ),
                   activeTrackColor: Colors.green,
-                  inactiveTrackColor: Colors.grey[700],
+                  inactiveTrackColor: Colors.grey,
                   thumbColor: Colors.white,
                 ),
                 child: Slider(
-                  value: state.position.position.inSeconds.toDouble(),
+                  value: position.clamp(0, duration),
                   min: 0,
-                  max: state.position.duration.inSeconds.toDouble(),
+                  max: duration > 0 ? duration : 1,
                   onChanged: (value) {
+                    setState(() {
+                      _dragValue = value; // chỉ update tạm
+                    });
+                  },
+                  onChangeStart: (_) {
+                    // bắt đầu kéo → ngưng nhận update từ stream
+                    setState(() {
+                      _dragValue = position;
+                    });
+                  },
+                  onChangeEnd: (value) {
+                    // thả tay → gọi seek, reset drag
                     playerCubit.seek(Duration(seconds: value.toInt()));
+                    setState(() {
+                      _dragValue = null;
+                    });
                   },
                 ),
               ),
               const SizedBox(height: 4),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      _formatDuration(state.position.position),
-                      style: TextStyle(color: Colors.grey[400]),
-                    ),
-                    Text(
-                      _formatDuration(state.position.duration),
-                      style: TextStyle(color: Colors.grey[400]),
-                    ),
-                  ],
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    _formatDuration(Duration(seconds: position.toInt())),
+                    style: TextStyle(color: Colors.grey[400]),
+                  ),
+                  Text(
+                    _formatDuration(Duration(seconds: duration.toInt())),
+                    style: TextStyle(color: Colors.grey[400]),
+                  ),
+                ],
               ),
             ],
           ),
@@ -229,7 +252,7 @@ class _PlayerContent extends StatelessWidget {
               IconButton(
                 icon: Icon(
                   Icons.shuffle,
-                  color: state.isShuffling ? Colors.green : Colors.white,
+                  color: widget.state.isShuffling ? Colors.green : Colors.white,
                   size: 28,
                 ),
                 onPressed: () => playerCubit.toggleShuffle(),
@@ -251,12 +274,12 @@ class _PlayerContent extends StatelessWidget {
                 ),
                 child: IconButton(
                   icon: Icon(
-                    state.isPlaying ? Icons.pause : Icons.play_arrow,
+                    widget.state.isPlaying ? Icons.pause : Icons.play_arrow,
                     color: Colors.black,
                     size: 36,
                   ),
                   onPressed: () {
-                    if (state.isPlaying) {
+                    if (widget.state.isPlaying) {
                       playerCubit.pause();
                     } else {
                       playerCubit.play();
@@ -276,8 +299,8 @@ class _PlayerContent extends StatelessWidget {
               // lapw
               IconButton(
                 icon: Icon(
-                  _getRepeatIcon(state.loopMode),
-                  color: _getRepeatColor(state.loopMode),
+                  _getRepeatIcon(widget.state.loopMode),
+                  color: _getRepeatColor(widget.state.loopMode),
                   size: 28,
                 ),
                 onPressed: () => playerCubit.toggleLoopMode(),
