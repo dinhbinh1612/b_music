@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:spotify_b/presentation/screens/hometabbottom/explore_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/home/home_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/library_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/trend/hot_screen.dart';
@@ -18,7 +17,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = const [
     HomeScreen(),
     HotScreen(),
-    ExploreScreen(),
+    // ExploreScreen(),
     LibraryScreen(),
   ];
 
@@ -53,10 +52,10 @@ class _MainScreenState extends State<MainScreen> {
                 icon: Icon(Icons.trending_up),
                 label: 'Xu hướng',
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.explore),
-                label: 'Khám phá',
-              ),
+              // BottomNavigationBarItem(
+              //   icon: Icon(Icons.explore),
+              //   label: 'Khám phá',
+              // ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.library_music),
                 label: 'Thư viện',

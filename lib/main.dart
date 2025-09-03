@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:spotify_b/blocs/history_state/history_cubit.dart';
 import 'package:spotify_b/blocs/player/player_song_cubit.dart';
 import 'package:spotify_b/blocs/profile/profile_cubit.dart';
 import 'package:spotify_b/blocs/register/register_bloc.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
             BlocProvider(create: (_) => RecommendedSongCubit(SongRepository())),
             BlocProvider(create: (context) => TrendingCubit()),
             BlocProvider(create: (_) => PlayerSongCubit()),
+            BlocProvider(create: (_) => HistoryCubit()),
           ],
           child: MaterialApp(
             theme: ThemeData(
@@ -74,7 +76,7 @@ class MyApp extends StatelessWidget {
                       ),
                       child: const CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          Color(0xFF1DB954), 
+                          Color(0xFF1DB954),
                         ),
                       ),
                     ),

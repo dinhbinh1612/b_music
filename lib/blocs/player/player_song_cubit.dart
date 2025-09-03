@@ -158,7 +158,6 @@ class PlayerSongCubit extends Cubit<PlayerSongState> {
     try {
       if (_audioPlayer.hasNext) {
         await _audioPlayer.seekToNext();
-        _currentIndex = (_currentIndex + 1) % _playlist.length;
       }
     } catch (e) {
       emit(PlayerError(e.toString()));
@@ -169,23 +168,9 @@ class PlayerSongCubit extends Cubit<PlayerSongState> {
     try {
       if (_audioPlayer.hasPrevious) {
         await _audioPlayer.seekToPrevious();
-        _currentIndex = (_currentIndex - 1) % _playlist.length;
-        if (_currentIndex < 0) _currentIndex = _playlist.length - 1;
-
-        final newSong = _playlist[_currentIndex];
-        emit(
-          PlayerPlaying(
-            currentSong: newSong,
-            position: const PlayerPosition(
-              position: Duration.zero,
-              duration: Duration.zero,
-            ),
-            isPlaying: _audioPlayer.playing,
-            isShuffling: _isShuffling,
-            loopMode: _loopMode,
-          ),
-        );
+        // Không emit ở đây nữa
       } else {
+        // Nếu ở đầu playlist, chỉ reset position
         await _audioPlayer.seek(Duration.zero);
       }
     } catch (e) {

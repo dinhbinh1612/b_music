@@ -13,4 +13,5 @@ class ApiConstants {
   static const String searchSongs = '$baseUrl/songs/search';
   static const String hotSongs = '$baseUrl/analytics/hot';
   static const String trackPlay = '$baseUrl/analytics/play';
+  static const String history = '$baseUrl/analytics/history';
 }

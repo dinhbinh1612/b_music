@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/history/history_screen.dart';
 
 class LibraryScreen extends StatelessWidget {
   const LibraryScreen({super.key});
@@ -32,24 +33,25 @@ class LibraryScreen extends StatelessWidget {
           _LibraryCategory(
             icon: Icons.favorite,
             title: 'Bài hát đã thích',
-            count: 125,
             onTap: () {
               // TODO: Điều hướng đến trang bài hát đã thích
             },
           ),
           const SizedBox(height: 16),
-          
+
           // Danh mục Lịch sử nghe
           _LibraryCategory(
             icon: Icons.history,
             title: 'Lịch sử nghe nhạc',
-            count: 89,
             onTap: () {
-              // TODO: Điều hướng đến trang lịch sử nghe
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => HistoryScreen()),
+              );
             },
           ),
           const SizedBox(height: 16),
-          
+
           // Tiêu đề Playlist
           const Padding(
             padding: EdgeInsets.only(bottom: 16),
@@ -62,7 +64,7 @@ class LibraryScreen extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Danh sách Playlist
           _PlaylistItem(
             title: 'Workout Mix',
@@ -120,13 +122,11 @@ class LibraryScreen extends StatelessWidget {
 class _LibraryCategory extends StatelessWidget {
   final IconData icon;
   final String title;
-  final int count;
   final VoidCallback onTap;
 
   const _LibraryCategory({
     required this.icon,
     required this.title,
-    required this.count,
     required this.onTap,
   });
 
@@ -139,7 +139,6 @@ class _LibraryCategory extends StatelessWidget {
           width: 50,
           height: 50,
           decoration: BoxDecoration(
-            color: const Color(0xFF1DB954).withOpacity(0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: const Color(0xFF1DB954)),
@@ -151,11 +150,11 @@ class _LibraryCategory extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        subtitle: Text(
-          '$count bài hát',
-          style: TextStyle(color: Colors.white.withOpacity(0.7)),
+
+        trailing: Icon(
+          Icons.arrow_forward,
+          color: Colors.white.withOpacity(0.7),
         ),
-        trailing: Icon(Icons.arrow_forward, color: Colors.white.withOpacity(0.7)),
         onTap: onTap,
       ),
     );
@@ -178,8 +177,7 @@ class _PlaylistItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      color: Colors.white10,
+      color: const Color.fromARGB(26, 234, 212, 212),
       child: ListTile(
         leading: Container(
           width: 50,

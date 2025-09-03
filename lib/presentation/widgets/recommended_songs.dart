@@ -134,7 +134,7 @@ class _RecommendedSongsSectionState extends State<RecommendedSongsSection> {
                                 ),
                               ),
 
-                              // GRADIENT OVERLAY Ở ĐÁY
+                              // OVERLAY ĐEN Ở DƯỚI ĐỂ CHO CHỮ NỔI
                               Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
