@@ -162,14 +162,26 @@ class _PlayerContentState extends State<_PlayerContent> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(
-                icon: Icon(
-                  Icons.favorite,
-                  color: song.isLiked ? Colors.green : Colors.white,
-                  size: 28,
-                ),
-                onPressed: () => playerCubit.toggleLike(),
+              BlocBuilder<PlayerSongCubit, PlayerSongState>(
+                builder: (context, state) {
+                  if (state is! PlayerPlaying) {
+                    return const SizedBox();
+                  }
+                  final song = state.currentSong;
+
+                  return IconButton(
+                    icon: Icon(
+                      song.isLiked ? Icons.favorite : Icons.favorite_border,
+                      color: song.isLiked ? Colors.red : Colors.white,
+                      size: 28,
+                    ),
+                    onPressed: () {
+                      context.read<PlayerSongCubit>().toggleLike();
+                    },
+                  );
+                },
               ),
+
               IconButton(
                 icon: const Icon(
                   Icons.playlist_play,

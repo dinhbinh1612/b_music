@@ -34,7 +34,7 @@ class HistoryCubit extends Cubit<HistoryState> {
     try {
       final token = await AuthManager.getToken();
       if (token == null) throw Exception('Chưa đăng nhập');
-
+      // print("TTTTT$token");
       final response = await _dio.get(
         ApiConstants.history, // dùng hằng số
         queryParameters: {

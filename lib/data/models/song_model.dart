@@ -9,7 +9,7 @@ class Song {
   final String streamUrl;
   final int likeCount;
   final int duration;
-  final bool isLiked;
+  bool isLiked; // không còn final
   final int playCount;
 
   Song({
@@ -25,9 +25,10 @@ class Song {
     required this.playCount,
   });
 
-  factory Song.fromJson(Map<String, dynamic> json) {
+  factory Song.fromJson(Map<String, dynamic> json, {List<String>? likedSongs}) {
+    final songId = json['id'] ?? '';
     return Song(
-      id: json['id'] ?? '',
+      id: songId,
       title: json['title'] ?? '',
       artist: json['artist'] ?? '',
       genre: json['genre'] ?? '',
@@ -35,8 +36,8 @@ class Song {
       streamUrl: json['streamUrl'] ?? '',
       likeCount: json['likeCount'] ?? 0,
       duration: json['duration'] ?? 0,
-      isLiked: json['isLiked'] ?? false,
       playCount: json['playCount'] ?? 0,
+      isLiked: likedSongs?.contains(songId) ?? false, 
     );
   }
 

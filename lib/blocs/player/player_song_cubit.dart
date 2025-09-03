@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:spotify_b/data/models/song_model.dart';
 import 'package:spotify_b/data/providers/analytics_api.dart';
+import 'package:spotify_b/data/providers/like_api.dart';
 
 part 'player_song_state.dart';
 
@@ -210,7 +210,29 @@ class PlayerSongCubit extends Cubit<PlayerSongState> {
   Future<void> toggleLike() async {
     if (state is PlayerPlaying) {
       final currentSong = (state as PlayerPlaying).currentSong;
-      debugPrint('Toggling like for song: ${currentSong.title}');
+      final songId = currentSong.id;
+
+      try {
+        final response = await LikeApi.toggleLike(songId);
+        final data = response['data'];
+
+        // Lấy danh sách likedSongs mới từ API
+        final updatedLikedSongs = List<String>.from(data['likedSongs'] ?? []);
+
+        // Map lại song với isLiked = true/false dựa vào likedSongs
+        final updatedSong = Song.fromJson(
+          data['song'],
+          likedSongs: updatedLikedSongs,
+        );
+
+        // Cập nhật playlist
+        _playlist[_currentIndex] = updatedSong;
+
+        // Emit state với currentSong mới
+        emit((state as PlayerPlaying).copyWith(currentSong: updatedSong));
+      } catch (e) {
+        emit(PlayerError("Like failed: $e"));
+      }
     }
   }
 
