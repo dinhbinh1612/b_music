@@ -4,6 +4,7 @@ import 'package:spotify_b/blocs/hot/hot_cubit.dart';
 import 'package:spotify_b/blocs/hot/hot_state.dart';
 import 'package:spotify_b/data/repositories/song_repository.dart';
 import 'package:spotify_b/data/models/song_model.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/player/music_player_screen.dart';
 
 class HotScreen extends StatelessWidget {
   const HotScreen({super.key});
@@ -219,7 +220,16 @@ class _HotViewState extends State<_HotView> {
                         song: song,
                         rank: index + 1,
                         onTap: () {
-                          // TODO: mở player
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => MusicPlayerScreen(
+                                    playlist: state.songs,
+                                    initialIndex: index,
+                                  ),
+                            ),
+                          );
                         },
                       );
                     },
