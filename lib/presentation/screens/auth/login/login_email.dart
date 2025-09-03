@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotify_b/blocs/login/login_cubit.dart';
 import 'package:spotify_b/core/configs/app_routes.dart';
-import 'package:spotify_b/core/utils/auth_manager.dart';
 import 'package:spotify_b/data/providers/auth_provider.dart';
 import 'package:spotify_b/presentation/widgets/common_auth_email_scaffold.dart';
 import 'package:spotify_b/presentation/widgets/custom_loading_dialog.dart';
@@ -61,14 +60,9 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                 } else if (state is LoginSuccess) {
                   Navigator.pushNamedAndRemoveUntil(
                     newContext,
-                    AppRoutes.home,
+                    AppRoutes.main,
                     (route) => false,
                   );
-                  AuthManager.setLoggedIn(true);
-                  // showCustomSnackBar(
-                  //   context: newContext,
-                  //   message: 'Đăng nhập thành công!',
-                  // );
                 } else if (state is LoginFailure) {
                   final error = state.errorMessage;
 

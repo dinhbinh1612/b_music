@@ -147,8 +147,9 @@ class _AccountScreenState extends State<AccountScreen> {
                     );
 
                     if (shouldLogout == true) {
-                      // Xóa thông tin đăng nhập
-                      await AuthManager.clearLogin();
+                      // Xóa token
+                      await AuthManager.clearToken();
+
                       if (context.mounted) {
                         Navigator.pushNamedAndRemoveUntil(
                           context,

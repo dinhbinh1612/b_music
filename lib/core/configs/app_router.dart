@@ -16,6 +16,7 @@ import 'package:spotify_b/presentation/screens/hometabbottom/home/account_screen
 import 'package:spotify_b/presentation/screens/hometabbottom/home/home_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/home/profile_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/home/search_screen.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/main_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -42,6 +43,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (_) => const LoginEmailScreen());
 
     // main- home
+    case AppRoutes.main:
+      return MaterialPageRoute(builder: (_) => const MainScreen());
     case AppRoutes.home:
       return MaterialPageRoute(builder: (_) => const HomeScreen());
     case AppRoutes.account:

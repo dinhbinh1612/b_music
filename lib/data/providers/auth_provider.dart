@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:spotify_b/core/constants/api_constants.dart';
+import 'package:spotify_b/core/utils/auth_manager.dart';
 import 'package:spotify_b/data/models/profile_model.dart';
 import 'package:spotify_b/data/models/user_login_model.dart';
 import 'package:spotify_b/data/models/user_register_model.dart';
@@ -50,11 +51,13 @@ class AuthProvider {
     );
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return Profile.fromJson(data);
+      return Profile.fromJson(json.decode(response.body));
+    } else if (response.statusCode == 401) {
+      // Token hết hạn hoặc không hợp lệ
+      await AuthManager.clearToken();
+      throw Exception("Token hết hạn, vui lòng đăng nhập lại");
     } else {
-      final error = json.decode(response.body);
-      throw Exception(error['message'] ?? 'Lấy profile thất bại');
+      throw Exception("Lấy profile thất bại");
     }
   }
 

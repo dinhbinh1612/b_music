@@ -13,6 +13,7 @@ class AppRoutes {
   static const loginEmail = '/login-email';
 
   // Main app
+  static const main = '/main';
   static const home = '/home';
   static const account = '/account';
   static const profile = '/profile';

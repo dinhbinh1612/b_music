@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/history/favorite_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/history/history_screen.dart';
 
 class LibraryScreen extends StatelessWidget {
@@ -27,17 +28,20 @@ class LibraryScreen extends StatelessWidget {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         children: [
           // Danh mục Bài hát đã thích
           _LibraryCategory(
             icon: Icons.favorite,
             title: 'Bài hát đã thích',
             onTap: () {
-              // TODO: Điều hướng đến trang bài hát đã thích
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const FavoriteScreen()),
+              );
             },
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 5),
 
           // Danh mục Lịch sử nghe
           _LibraryCategory(
@@ -106,14 +110,8 @@ class LibraryScreen extends StatelessWidget {
               // TODO: Mở playlist
             },
           ),
+          
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Tạo playlist mới
-        },
-        backgroundColor: const Color(0xFF1DB954),
-        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -138,9 +136,7 @@ class _LibraryCategory extends StatelessWidget {
         leading: Container(
           width: 50,
           height: 50,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
           child: Icon(icon, color: const Color(0xFF1DB954)),
         ),
         title: Text(
