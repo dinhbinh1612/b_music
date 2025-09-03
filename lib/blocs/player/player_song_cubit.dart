@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:spotify_b/data/models/song_model.dart';
+import 'package:spotify_b/data/providers/analytics_api.dart';
 
 part 'player_song_state.dart';
 
@@ -15,6 +16,9 @@ class PlayerSongCubit extends Cubit<PlayerSongState> {
   LoopMode _loopMode = LoopMode.off;
   StreamSubscription? _positionSubscription;
   StreamSubscription? _playerStateSubscription;
+
+  // Biến kiểm tra lượt nghe đã gửi hay chưa
+  final Map<String, bool> _songPlayTracked = {};
 
   PlayerSongCubit() : _audioPlayer = AudioPlayer(), super(PlayerInitial()) {
     _setupListeners();
@@ -32,6 +36,23 @@ class PlayerSongCubit extends Cubit<PlayerSongState> {
         ).listen((position) {
           if (state is PlayerPlaying) {
             emit((state as PlayerPlaying).copyWith(position: position));
+            // Tính % bài hát đã nghe
+            final currentSong = (state as PlayerPlaying).currentSong;
+            final songId = currentSong.id;
+
+            if (!_songPlayTracked.containsKey(songId)) {
+              _songPlayTracked[songId] = false;
+            }
+
+            // Gửi lượt nghe nếu chưa gửi và đã nghe hơn 30%
+            if (!_songPlayTracked[songId]! &&
+                position.duration.inSeconds > 0 &&
+                position.position.inSeconds / position.duration.inSeconds >=
+                    0.3) {
+              final duration = currentSong.duration;
+              AnalyticsApi.trackPlay(songId: songId, duration: duration);
+              _songPlayTracked[songId] = true; // Đánh dấu là đã gửi
+            }
           }
         });
 
@@ -39,7 +60,6 @@ class PlayerSongCubit extends Cubit<PlayerSongState> {
       playerState,
     ) {
       final isPlaying = playerState.playing;
-
       if (state is PlayerPlaying && !isClosed) {
         emit((state as PlayerPlaying).copyWith(isPlaying: isPlaying));
       }
@@ -69,6 +89,7 @@ class PlayerSongCubit extends Cubit<PlayerSongState> {
   Future<void> initPlayer(List<Song> playlist, {int initialIndex = 0}) async {
     _playlist = playlist;
     _currentIndex = initialIndex;
+    _songPlayTracked.clear();
 
     try {
       emit(PlayerLoading());
@@ -210,6 +231,7 @@ class PlayerSongCubit extends Cubit<PlayerSongState> {
 
   @override
   Future<void> close() async {
+    _songPlayTracked.clear();
     await _positionSubscription?.cancel();
     await _playerStateSubscription?.cancel();
     await _audioPlayer.dispose();

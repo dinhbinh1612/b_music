@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
                       ),
                       child: const CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          Color(0xFF1DB954), // Màu xanh lá Spotify
+                          Color(0xFF1DB954), 
                         ),
                       ),
                     ),

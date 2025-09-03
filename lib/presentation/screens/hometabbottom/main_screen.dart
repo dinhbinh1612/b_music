@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/explore_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/home/home_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/library_screen.dart';
-import 'package:spotify_b/presentation/screens/hometabbottom/trend_screen.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/trend/hot_screen.dart';
 import 'package:spotify_b/presentation/widgets/mini_player.dart';
 
 class MainScreen extends StatefulWidget {
@@ -17,7 +17,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = const [
     HomeScreen(),
-    TrendScreen(),
+    HotScreen(),
     ExploreScreen(),
     LibraryScreen(),
   ];

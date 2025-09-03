@@ -10,6 +10,7 @@ class Song {
   final int likeCount;
   final int duration;
   final bool isLiked;
+  final int playCount;
 
   Song({
     required this.id,
@@ -21,6 +22,7 @@ class Song {
     required this.likeCount,
     required this.duration,
     this.isLiked = false,
+    required this.playCount,
   });
 
   factory Song.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class Song {
       likeCount: json['likeCount'] ?? 0,
       duration: json['duration'] ?? 0,
       isLiked: json['isLiked'] ?? false,
+      playCount: json['playCount'] ?? 0,
     );
   }
 
@@ -48,6 +51,7 @@ class Song {
       'likeCount': likeCount,
       'duration': duration,
       'isLiked': isLiked,
+      'playCount': playCount,
     };
   }
 
@@ -61,6 +65,7 @@ class Song {
     int? likeCount,
     int? duration,
     bool? isLiked,
+    int? playCount,
   }) {
     return Song(
       id: id ?? this.id,
@@ -72,6 +77,7 @@ class Song {
       likeCount: likeCount ?? this.likeCount,
       duration: duration ?? this.duration,
       isLiked: isLiked ?? this.isLiked,
+      playCount: playCount ?? this.playCount,
     );
   }
 

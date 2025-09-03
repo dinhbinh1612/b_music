@@ -125,4 +125,72 @@ class SongRepository {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> getHotSongs({
+    String range = 'week',
+    int page = 1,
+    int limit = 20,
+  }) async {
+    try {
+      final token = await AuthManager.getToken();
+      if (token == null) {
+        throw Exception('Chưa đăng nhập');
+      }
+
+      debugPrint(
+        'Fetching hot songs with range: $range, page: $page, limit: $limit',
+      );
+
+      final response = await dio.get(
+        '${ApiConstants.baseUrl}/analytics/hot',
+        queryParameters: {
+          'range': range,
+          'page': page.toString(),
+          'limit': limit.toString(),
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      debugPrint('Hot API response status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        // debugPrint('Hot API response: ${response.data}');
+
+        if (response.data['success'] == true && response.data['data'] != null) {
+          final responseData = response.data['data'];
+          final List<dynamic> songsJson = responseData['songs'] ?? [];
+
+          final List<Song> songs =
+              songsJson.map((json) => Song.fromJson(json)).toList();
+          final int currentPage = responseData['page'];
+          final int totalPages = responseData['totalPages'];
+
+          debugPrint(
+            'Found ${songs.length} hot songs, page $currentPage/$totalPages',
+          );
+
+          return {
+            'songs': songs,
+            'currentPage': currentPage,
+            'totalPages': totalPages,
+            'hasMore': currentPage < totalPages,
+          };
+        } else {
+          throw Exception(
+            'Invalid API response format: missing data or success flag',
+          );
+        }
+      } else {
+        throw Exception('Failed to load hot songs: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Error in getHotSongs: $e');
+      rethrow;
+    }
+  }
 }
