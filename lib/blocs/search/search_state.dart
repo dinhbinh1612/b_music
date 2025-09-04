@@ -5,6 +5,7 @@ import 'package:spotify_b/blocs/search/search_cubit.dart';
 import 'package:spotify_b/data/models/song_model.dart';
 import 'package:spotify_b/data/repositories/song_repository.dart';
 import 'package:spotify_b/core/utils/search_history_store.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/player/music_player_screen.dart';
 
 class SearchPage extends StatelessWidget {
   const SearchPage({super.key});
@@ -76,7 +77,7 @@ class _SearchViewState extends State<_SearchView> {
   bool get _isQueryEmpty => _controller.text.trim().isEmpty;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context ) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -111,15 +112,18 @@ class _SearchViewState extends State<_SearchView> {
                   horizontal: 16,
                 ),
                 // nút clear nhanh
-                suffixIcon: _controller.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white70),
-                        onPressed: () {
-                          _controller.clear();
-                          setState(() {}); // cập nhật suffixIcon & hiển thị history
-                        },
-                      )
-                    : null,
+                suffixIcon:
+                    _controller.text.isNotEmpty
+                        ? IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white70),
+                          onPressed: () {
+                            _controller.clear();
+                            setState(
+                              () {},
+                            ); // cập nhật suffixIcon & hiển thị history
+                          },
+                        )
+                        : null,
               ),
               onChanged: (value) {
                 setState(() {}); // để cập nhật suffixIcon và điều kiện hiển thị
@@ -191,10 +195,11 @@ class _SearchViewState extends State<_SearchView> {
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Icon(
-                            Icons.music_note,
-                            color: Colors.white70,
-                          ),
+                          errorBuilder:
+                              (_, __, ___) => const Icon(
+                                Icons.music_note,
+                                color: Colors.white70,
+                              ),
                         ),
                       ),
                       title: Text(
@@ -205,9 +210,22 @@ class _SearchViewState extends State<_SearchView> {
                         song.artist,
                         style: const TextStyle(color: Colors.white70),
                       ),
-                      trailing: const Icon(Icons.more_vert, color: Colors.white),
+                      trailing: const Icon(
+                        Icons.more_vert,
+                        color: Colors.white,
+                      ),
                       onTap: () {
-                        // TODO: mở player
+                        final state = context.read<SearchCubit>().state;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) => MusicPlayerScreen(
+                                  playlist: state.results,
+                                  initialIndex: index,
+                                ),
+                          ),
+                        );
                       },
                     );
                   },
@@ -276,15 +294,16 @@ class _HistorySection extends StatelessWidget {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: items.map((q) {
-            return InputChip(
-              label: Text(q, style: const TextStyle(color: Colors.white)),
-              backgroundColor: Colors.grey.shade800,
-              onPressed: () => onTapItem(q),
-              deleteIconColor: Colors.white70,
-              onDeleted: () => onRemoveItem(q),
-            );
-          }).toList(),
+          children:
+              items.map((q) {
+                return InputChip(
+                  label: Text(q, style: const TextStyle(color: Colors.white)),
+                  backgroundColor: Colors.grey.shade800,
+                  onPressed: () => onTapItem(q),
+                  deleteIconColor: Colors.white70,
+                  onDeleted: () => onRemoveItem(q),
+                );
+              }).toList(),
         ),
       ],
     );

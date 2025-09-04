@@ -15,4 +15,5 @@ class ApiConstants {
   static const String trackPlay = '$baseUrl/analytics/play';
   static const String history = '$baseUrl/analytics/history';
   static const String likeSong = '$baseUrl/users/liked-songs';
+  static const String createPlaylist = '$baseUrl/playlists';
 }

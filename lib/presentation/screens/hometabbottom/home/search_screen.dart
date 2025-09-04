@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotify_b/blocs/search/search_cubit.dart';
-import 'package:spotify_b/data/models/song_model.dart';
 import 'package:spotify_b/data/repositories/song_repository.dart';
 import 'package:spotify_b/core/utils/search_history_store.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/home/widget/search_history_section.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/home/widget/search_input.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/home/widget/search_results.dart';
 
 class SearchPage extends StatelessWidget {
   const SearchPage({super.key});
@@ -44,7 +46,7 @@ class _SearchViewState extends State<_SearchView> {
   }
 
   Future<void> _addToHistory(String q) async {
-    if (q.trim().length < 2) return; // không lưu query quá ngắn
+    if (q.trim().length < 2) return;
     await SearchHistoryStore.add(q);
     await _loadHistory();
   }
@@ -59,11 +61,18 @@ class _SearchViewState extends State<_SearchView> {
     await _loadHistory();
   }
 
-  void _onSearch(BuildContext context, String query) {
+  // Hàm tìm kiếm luu lich su tim kiem
+  void _onSearch(
+    BuildContext context,
+    String query, {
+    bool saveHistory = true,
+  }) {
     final q = query.trim();
     if (q.isEmpty) return;
     context.read<SearchCubit>().search(q);
-    _addToHistory(q); // lưu lịch sử khi thực sự gọi search
+    if (saveHistory) {
+      _addToHistory(q); // chỉ lưu khi submit
+    }
   }
 
   @override
@@ -94,63 +103,26 @@ class _SearchViewState extends State<_SearchView> {
       ),
       body: Column(
         children: [
-          // Ô nhập
-          Padding(
-            padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
-            child: TextField(
-              controller: _controller,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: "Nhập tên bài hát hoặc ca sĩ...",
-                hintStyle: TextStyle(color: Colors.grey.shade400),
-                prefixIcon: const Icon(Icons.search, color: Colors.white70),
-                filled: true,
-                fillColor: Colors.grey.shade900,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 0,
-                  horizontal: 16,
-                ),
-                // nút clear nhanh
-                suffixIcon:
-                    _controller.text.isNotEmpty
-                        ? IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white70),
-                          onPressed: () {
-                            _controller.clear();
-                            setState(
-                              () {},
-                            ); // cập nhật suffixIcon & hiển thị history
-                          },
-                        )
-                        : null,
-              ),
-              onChanged: (value) {
-                setState(() {}); // để cập nhật suffixIcon và điều kiện hiển thị
-                if (_debounce?.isActive ?? false) _debounce!.cancel();
-                _debounce = Timer(const Duration(milliseconds: 500), () {
-                  _onSearch(context, value);
-                });
-              },
-              onSubmitted: (value) => _onSearch(context, value),
-              textInputAction: TextInputAction.search,
-            ),
+          // Ồ tìm kiếm
+          SearchInput(
+            controller: _controller,
+            debounce: _debounce,
+            onSearch:
+                (q, {saveHistory = true}) =>
+                    _onSearch(context, q, saveHistory: saveHistory),
+            onDebounceChanged: (t) => _debounce = t,
           ),
 
           // Kết quả hoặc lịch sử
           Expanded(
             child: BlocBuilder<SearchCubit, SearchState>(
               builder: (context, state) {
-                // Nếu chưa gõ gì hoặc đang xoá hết -> hiển thị lịch sử
                 if (_isQueryEmpty) {
-                  return _HistorySection(
+                  return SearchHistorySection(
                     items: _history,
                     onTapItem: (q) {
                       _controller.text = q;
-                      setState(() {}); // cập nhật UI
+                      setState(() {});
                       _onSearch(context, q);
                     },
                     onRemoveItem: _removeFromHistory,
@@ -158,166 +130,12 @@ class _SearchViewState extends State<_SearchView> {
                   );
                 }
 
-                // Loading
-                if (state.isLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: Colors.white),
-                  );
-                }
-
-                // Lỗi
-                if (state.error != null) {
-                  return Center(
-                    child: Text(
-                      "Lỗi: ${state.error}",
-                      style: const TextStyle(color: Colors.redAccent),
-                    ),
-                  );
-                }
-
-                // Không có kết quả
-                if (state.results.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      "Không có kết quả",
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  );
-                }
-
-                // Danh sách kết quả
-                return ListView.builder(
-                  itemCount: state.results.length,
-                  itemBuilder: (context, index) {
-                    final Song song = state.results[index];
-                    return ListTile(
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          song.fullCoverUrl,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                          errorBuilder:
-                              (_, __, ___) => const Icon(
-                                Icons.music_note,
-                                color: Colors.white70,
-                              ),
-                        ),
-                      ),
-                      title: Text(
-                        song.title,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      subtitle: Text(
-                        song.artist,
-                        style: const TextStyle(color: Colors.white70),
-                      ),
-                      trailing: const Icon(
-                        Icons.more_vert,
-                        color: Colors.white,
-                      ),
-                      onTap: () {
-                        // TODO: setting
-                      },
-                    );
-                  },
-                );
+                return SearchResults(state: state);
               },
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-/// Section hiển thị lịch sử tìm kiếm (dark)
-class _HistorySection extends StatelessWidget {
-  final List<String> items;
-  final ValueChanged<String> onTapItem;
-  final ValueChanged<String> onRemoveItem;
-  final VoidCallback onClearAll;
-
-  const _HistorySection({
-    required this.items,
-    required this.onTapItem,
-    required this.onRemoveItem,
-    required this.onClearAll,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (items.isEmpty) {
-      return const Center(
-        child: Text(
-          "Chưa có lịch sử tìm kiếm",
-          style: TextStyle(color: Colors.white70),
-        ),
-      );
-    }
-
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      children: [
-        // lịch sử tìm kiếm
-        Column(
-          children:
-              items.map((q) {
-                return ListTile(
-                  leading: const Icon(Icons.history, color: Colors.white70),
-                  title: Text(q, style: const TextStyle(color: Colors.white)),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white70),
-                    onPressed: () => onRemoveItem(q),
-                  ),
-                );
-              }).toList(),
-        ),
-        TextButton(
-          onPressed: () async {
-            final confirm = await showDialog<bool>(
-              context: context,
-              builder:
-                  (context) => AlertDialog(
-                    backgroundColor: Colors.grey.shade900,
-                    title: const Text(
-                      'Xác nhận',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    content: const Text(
-                      'Bạn có chắc muốn xoá tất cả lịch sử tìm kiếm?',
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, false), // hủy
-                        child: const Text(
-                          'Hủy',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, true), // đồng ý
-                        child: const Text(
-                          'Xoá',
-                          style: TextStyle(color: Colors.redAccent),
-                        ),
-                      ),
-                    ],
-                  ),
-            );
-
-            if (confirm == true) {
-              onClearAll(); // gọi hàm xoá nếu đồng ý
-            }
-          },
-          child: const Text(
-            "Xoá tất cả",
-            style: TextStyle(color: Colors.white70, fontSize: 16),
-          ),
-        ),
-      ],
     );
   }
 }

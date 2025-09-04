@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spotify_b/blocs/profile/profile_cubit.dart';
 import 'package:spotify_b/core/configs/app_routes.dart';
-import 'package:spotify_b/core/constants/api_constants.dart';
 import 'package:spotify_b/core/utils/auth_manager.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/home/widget/account_header.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/home/widget/account_tile.dart';
+
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -39,55 +41,16 @@ class _AccountScreenState extends State<AccountScreen> {
             return ListView(
               children: [
                 const SizedBox(height: 20),
-                // Avatar + tên tài khoản
-                Center(
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        key: ValueKey(state.avatarVersion),
-                        radius: 40,
-                        backgroundImage:
-                            profile.avatar.isNotEmpty
-                                ? NetworkImage(
-                                  "${ApiConstants.baseUrl}${profile.avatar}?v=${state.avatarVersion}",
-                                )
-                                : null,
-                        backgroundColor: Colors.white24,
-                        child:
-                            profile.avatar.isEmpty
-                                ? const Icon(
-                                  Icons.account_circle,
-                                  size: 60,
-                                  color: Colors.white,
-                                )
-                                : null,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        profile.username,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        profile.email,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
+                AccountHeader(
+                  profile: profile,
+                  avatarVersion: state.avatarVersion,
                 ),
                 const SizedBox(height: 30),
-                _AccountTile(
+
+                AccountTile(
                   icon: Icons.person,
                   label: "Thông tin cá nhân",
                   onTap: () async {
-                    //
                     final isUpdated = await Navigator.pushNamed(
                       context,
                       AppRoutes.profile,
@@ -97,20 +60,21 @@ class _AccountScreenState extends State<AccountScreen> {
                     }
                   },
                 ),
-                const _AccountTile(icon: Icons.settings, label: "Cài đặt"),
-                const _AccountTile(
+                const AccountTile(icon: Icons.settings, label: "Cài đặt"),
+                const AccountTile(
                   icon: Icons.history,
                   label: "Lịch sử nghe nhạc",
                 ),
-                const _AccountTile(
+                const AccountTile(
                   icon: Icons.favorite,
                   label: "Bài hát yêu thích",
                 ),
-                const _AccountTile(
+                const AccountTile(
                   icon: Icons.playlist_play,
                   label: "Playlist của tôi",
                 ),
-                _AccountTile(
+
+                AccountTile(
                   icon: Icons.logout,
                   label: "Đăng xuất",
                   onTap: () async {
@@ -147,9 +111,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     );
 
                     if (shouldLogout == true) {
-                      // Xóa token
                       await AuthManager.clearToken();
-
                       if (context.mounted) {
                         Navigator.pushNamedAndRemoveUntil(
                           context,
@@ -185,24 +147,6 @@ class _AccountScreenState extends State<AccountScreen> {
           );
         },
       ),
-    );
-  }
-}
-
-class _AccountTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback? onTap;
-
-  const _AccountTile({required this.icon, required this.label, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.white),
-      title: Text(label, style: const TextStyle(color: Colors.white)),
-      onTap: onTap,
-      splashColor: Colors.transparent, // tắt hiệu ứng sóng nước
     );
   }
 }

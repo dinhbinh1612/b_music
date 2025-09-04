@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/home/home_screen.dart';
-import 'package:spotify_b/presentation/screens/hometabbottom/history/library_screen.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/library/library_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/trend/hot_screen.dart';
 import 'package:spotify_b/presentation/widgets/mini_player.dart';
 
