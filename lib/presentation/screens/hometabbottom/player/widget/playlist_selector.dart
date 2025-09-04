@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spotify_b/data/models/song_model.dart';
 import 'package:spotify_b/data/providers/playlist_service.dart';
-import 'package:spotify_b/presentation/screens/hometabbottom/player/widget/user_playlist_list.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/library/widget/user_playlist_list.dart';
 
 class PlaylistSelector extends StatelessWidget {
   final Song currentSong;
@@ -30,6 +30,7 @@ class PlaylistSelector extends StatelessWidget {
           backgroundColor: Colors.green,
         );
       }
+      // ignore: use_build_context_synchronously
       Navigator.pop(context); // đóng modal sau khi chọn
     } catch (e) {
       // ScaffoldMessenger.of(context).showSnackBar(

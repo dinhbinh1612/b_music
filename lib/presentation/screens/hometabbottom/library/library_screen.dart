@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spotify_b/blocs/playlist/playlist_cubit.dart';
+import 'package:spotify_b/blocs/playlist/playlist_state.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/library/favorite_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/library/history_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/library/widget/library_category_item.dart';
-import 'package:spotify_b/presentation/screens/hometabbottom/player/widget/user_playlist_list.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/library/widget/playlist_detail_screen.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/library/widget/playlist_item.dart';
 
 class LibraryScreen extends StatelessWidget {
   const LibraryScreen({super.key});
@@ -29,50 +33,83 @@ class LibraryScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(10),
-        children: [
-          // Danh mục Bài hát đã thích
-          LibraryCategoryItem(
-            icon: Icons.favorite,
-            title: 'Bài hát đã thích',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const FavoriteScreen()),
-              );
-            },
-          ),
-          const SizedBox(height: 5),
+      body: BlocBuilder<PlaylistCubit, PlaylistState>(
+        builder: (context, state) {
+          if (state.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-          // Danh mục Lịch sử nghe
-          LibraryCategoryItem(
-            icon: Icons.history,
-            title: 'Lịch sử nghe nhạc',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const HistoryScreen()),
-              );
-            },
-          ),
-          const SizedBox(height: 16),
+          if (state.error != null) {
+            return Center(child: Text('Error: ${state.error}'));
+          }
 
-          const Padding(
-            padding: EdgeInsets.only(bottom: 16),
-            child: Text(
-              'Playlist của bạn',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+          return ListView(
+            padding: const EdgeInsets.all(10),
+            children: [
+              // Danh mục Bài hát đã thích
+              LibraryCategoryItem(
+                icon: Icons.favorite,
+                title: 'Bài hát đã thích',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const FavoriteScreen()),
+                  );
+                },
               ),
-            ),
-          ),
+              const SizedBox(height: 5),
 
-          // Danh sách playlist thực tế
-          const UserPlaylistList(),
-        ],
+              // Danh mục Lịch sử nghe
+              LibraryCategoryItem(
+                icon: Icons.history,
+                title: 'Lịch sử nghe nhạc',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+
+              const Padding(
+                padding: EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Playlist của bạn',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              // Hiển thị danh sách playlist
+              ...state.playlists.map(
+                (playlist) => PlaylistItem(
+                  playlistId: playlist['id'],
+                  title: playlist['name'],
+                  songCount:
+                      playlist['songs'] != null ? playlist['songs'].length : 0,
+                  color:
+                      Colors.primaries[state.playlists.indexOf(playlist) %
+                          Colors.primaries.length],
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (_) => PlaylistDetailScreen(
+                              playlistId: playlist['id'],
+                            ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

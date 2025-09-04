@@ -6,6 +6,7 @@ import 'package:spotify_b/blocs/favorire_song/liked_songs_cubit.dart';
 import 'package:spotify_b/blocs/history_state/history_cubit.dart';
 import 'package:spotify_b/blocs/hot/hot_cubit.dart';
 import 'package:spotify_b/blocs/player/player_song_cubit.dart';
+import 'package:spotify_b/blocs/playlist/playlist_cubit.dart';
 import 'package:spotify_b/blocs/profile/profile_cubit.dart';
 import 'package:spotify_b/blocs/register/register_bloc.dart';
 import 'package:spotify_b/blocs/register/register_data_cubit.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
             BlocProvider(create: (_) => PlayerSongCubit()),
             BlocProvider(create: (_) => HistoryCubit()),
             BlocProvider(create: (_) => LikedSongsCubit()),
+            BlocProvider(create: (_) => PlaylistCubit()..loadPlaylists()),
           ],
           child: MaterialApp(
             theme: ThemeData(

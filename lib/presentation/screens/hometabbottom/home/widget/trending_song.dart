@@ -25,7 +25,6 @@ class _TrendingSongsSectionState extends State<TrendingSongsSection> {
     });
   }
 
-
   @override
   void dispose() {
     // _scrollController.removeListener(_onScroll);
@@ -152,8 +151,15 @@ class _TrendingSongsSectionState extends State<TrendingSongsSection> {
 
   Widget _buildVerticalSongItem(Song song, int index, List<Song> playlist) {
     return GestureDetector(
-      onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (_) => MusicPlayerScreen(playlist: playlist, initialIndex: index)));
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (_) =>
+                    MusicPlayerScreen(playlist: playlist, initialIndex: index),
+          ),
+        );
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8),

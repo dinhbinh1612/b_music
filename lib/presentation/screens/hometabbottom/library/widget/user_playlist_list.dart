@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spotify_b/data/providers/playlist_service.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/library/widget/playlist_detail_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/library/widget/playlist_item.dart';
 
 class UserPlaylistList extends StatefulWidget {
@@ -93,10 +94,15 @@ class _UserPlaylistListState extends State<UserPlaylistList> {
           songCount: (playlist['songCount'] ?? 0) as int,
           color: color,
           onTap: () {
-            if (widget.onPlaylistTap != null) {
-              widget.onPlaylistTap!(playlist);
-            }
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (_) => PlaylistDetailScreen(playlistId: playlist['id']),
+              ),
+            );
           },
+          playlistId: '',
         );
       },
     );
