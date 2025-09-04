@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/library/favorite_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/library/history_screen.dart';
 import 'package:spotify_b/presentation/screens/hometabbottom/library/widget/library_category_item.dart';
-import 'package:spotify_b/presentation/screens/hometabbottom/library/widget/playlist_item.dart';
+import 'package:spotify_b/presentation/screens/hometabbottom/player/widget/user_playlist_list.dart';
 
 class LibraryScreen extends StatelessWidget {
   const LibraryScreen({super.key});
@@ -70,36 +70,8 @@ class LibraryScreen extends StatelessWidget {
             ),
           ),
 
-          PlaylistItem(
-            title: 'Workout Mix',
-            songCount: 25,
-            color: Colors.purple[800]!,
-            onTap: () {},
-          ),
-          PlaylistItem(
-            title: 'Chill Vibes',
-            songCount: 42,
-            color: Colors.blue[800]!,
-            onTap: () {},
-          ),
-          PlaylistItem(
-            title: 'Party Time',
-            songCount: 38,
-            color: Colors.red[800]!,
-            onTap: () {},
-          ),
-          PlaylistItem(
-            title: 'Focus Mode',
-            songCount: 31,
-            color: Colors.green[800]!,
-            onTap: () {},
-          ),
-          PlaylistItem(
-            title: 'Road Trip',
-            songCount: 47,
-            color: Colors.orange[800]!,
-            onTap: () {},
-          ),
+          // Danh sách playlist thực tế
+          const UserPlaylistList(),
         ],
       ),
     );

@@ -7,7 +7,8 @@ class ApiConstants {
   static const String uploadAvatar = '$baseUrl/users/me/avatar';
 
   static const String allSongs = '$baseUrl/songs';
-  static const String recommendSongs = '$baseUrl/analytics/recommendations?limit=18';
+  static const String recommendSongs =
+      '$baseUrl/analytics/recommendations?limit=18';
   static const String trendingSongs = '$baseUrl/analytics/trending';
   static const String historySongs = '$baseUrl/analytics/history';
   static const String searchSongs = '$baseUrl/songs/search';
@@ -15,5 +16,5 @@ class ApiConstants {
   static const String trackPlay = '$baseUrl/analytics/play';
   static const String history = '$baseUrl/analytics/history';
   static const String likeSong = '$baseUrl/users/liked-songs';
-  static const String createPlaylist = '$baseUrl/playlists';
+  static const String playlists = '$baseUrl/playlists';
 }

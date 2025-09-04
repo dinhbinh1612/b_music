@@ -12,7 +12,7 @@ class PlaylistService {
       }
 
       final response = await http.post(
-        Uri.parse(ApiConstants.createPlaylist),
+        Uri.parse(ApiConstants.playlists),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -34,6 +34,61 @@ class PlaylistService {
       }
     } catch (e) {
       rethrow;
+    }
+  }
+
+  static Future<List<dynamic>> getPlaylists() async {
+    try {
+      final token = await AuthManager.getToken();
+      if (token == null) {
+        throw Exception('No authentication token found');
+      }
+
+      final response = await http.get(
+        Uri.parse(ApiConstants.playlists),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data;
+      } else {
+        throw Exception('Failed to load playlists');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<Map<String, dynamic>> addSongToPlaylist(
+    String playlistId,
+    String songId,
+  ) async {
+    final token = await AuthManager.getToken();
+    if (token == null) {
+      throw Exception('No authentication token found');
+    }
+
+    final url = Uri.parse("${ApiConstants.playlists}/$playlistId/songs");
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({"songId": songId}),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      // Trả luôn lỗi server về để xử lý Snackbar
+      final error = jsonDecode(response.body);
+      return {"message": error['message'] ?? "Failed to add song"};
     }
   }
 }
